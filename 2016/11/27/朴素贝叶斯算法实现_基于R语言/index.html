@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="R语言,机器学习算法实现,朴素贝叶斯算法," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="贝叶斯分类算法是统计学的一种分类方法，它是一类利用贝叶斯定理为基础进行分类的算法。在许多场合，贝叶斯分类算法可以与决策树和神经网络分类算法相媲美，该算法能运用到大型数据库中，而且方法简单、分类准确率高、速度快。本文主要介绍贝叶斯分类算法中最简单的一种：朴素贝叶斯算法(Naive Bayesian Model，NBM)的基础以及R语言实现。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="朴素贝叶斯算法实现_基于R语言">
+<meta property="og:url" content="http://yoursite.com/2016/11/27/%E6%9C%B4%E7%B4%A0%E8%B4%9D%E5%8F%B6%E6%96%AF%E7%AE%97%E6%B3%95%E5%AE%9E%E7%8E%B0_%E5%9F%BA%E4%BA%8ER%E8%AF%AD%E8%A8%80/index.html">
+<meta property="og:site_name" content="大枫的个人博客">
+<meta property="og:description" content="贝叶斯分类算法是统计学的一种分类方法，它是一类利用贝叶斯定理为基础进行分类的算法。在许多场合，贝叶斯分类算法可以与决策树和神经网络分类算法相媲美，该算法能运用到大型数据库中，而且方法简单、分类准确率高、速度快。本文主要介绍贝叶斯分类算法中最简单的一种：朴素贝叶斯算法(Naive Bayesian Model，NBM)的基础以及R语言实现。">
+<meta property="og:image" content="https://pic.downk.cc/item/5e86e689504f4bcb04ab1479.png">
+<meta property="article:published_time" content="2016-11-27T12:47:10.000Z">
+<meta property="article:modified_time" content="2020-04-03T08:27:37.167Z">
+<meta property="article:author" content="大枫">
+<meta property="article:tag" content="R语言">
+<meta property="article:tag" content="机器学习算法实现">
+<meta property="article:tag" content="朴素贝叶斯算法">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.downk.cc/item/5e86e689504f4bcb04ab1479.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/11/27/朴素贝叶斯算法实现_基于R语言/"/>
+
+
+
+
+
+  <title>朴素贝叶斯算法实现_基于R语言 | 大枫的个人博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?86773429461bd9f404e524d58c7b14ec";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大枫的个人博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">这是最好的时代，也是最坏的时代</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/11/27/%E6%9C%B4%E7%B4%A0%E8%B4%9D%E5%8F%B6%E6%96%AF%E7%AE%97%E6%B3%95%E5%AE%9E%E7%8E%B0_%E5%9F%BA%E4%BA%8ER%E8%AF%AD%E8%A8%80/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大枫">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大枫的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">朴素贝叶斯算法实现_基于R语言</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-11-27T20:47:10+08:00">
+                2016-11-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>贝叶斯分类算法是统计学的一种分类方法，它是一类利用贝叶斯定理为基础进行分类的算法。在许多场合，贝叶斯分类算法可以与决策树和神经网络分类算法相媲美，该算法能运用到大型数据库中，而且方法简单、分类准确率高、速度快。本文主要介绍贝叶斯分类算法中最简单的一种：朴素贝叶斯算法(Naive Bayesian Model，NBM)的基础以及R语言实现。</p>
+<a id="more"></a>
+<h3 id="一、朴素贝叶斯算法的基础"><a href="#一、朴素贝叶斯算法的基础" class="headerlink" title="一、朴素贝叶斯算法的基础"></a>一、朴素贝叶斯算法的基础</h3><p>首先我们要了解几个概念：<br>设$X为m$维向量的集合，即 $X\subseteq\lbrace x_1,x_2,x_3,…\rbrace$，这里的$x_m$在日常业务中可以理解为各种特征集合，例如$x_m=\lbrace z_1,z_2,z_3,z_4,…\rbrace$，其中$z_1$表示年龄、$z_2$表示性别、$z_3$表示收入、$z_4$表示学历等等。</p>
+<p>设$Y为n$维向量的集合，即$Y\subseteq\lbrace y_1,y_2,y_3,…\rbrace$，这里的$y_n$在日常业务中可以理解为目标的分类变量，例如违约和不违约、购买和不购买等目标分类。</p>
+<p>这样由$X和Y$就构成我们的训练数据集：<br>$$<br>T=\lbrace(x_1,y_1),(x_2,y_2),…,(x_i,y_i)\rbrace<br>$$<br><strong>先验概率</strong>是指根据以往经验和分析得到的概率,公式如下：<br>$$<br>P(Y=y_n)或P(X=x_m)<br>$$<br>$P(X=x_m|Y=y_n)$表示事件$Y=y_n$已经发生的前提下，事件$X=x_m$发生的概率，叫做事件$Y=y_n$发生下事件$X=x_m$的<strong>条件概率</strong>。条件概率的基本求解公式如下<br>$$<br>P(X=x_m|Y=y_n)=\frac{P(X=x_m &amp; Y=y_n)}{P(Y=y_n)}<br>$$<br>在我们日常业务建模中，条件概率$P(X=x_m|Y=y_n)$和先验概率$P(Y=y_n)和P(X=x_m)$都可以根据历史数据求出，之后根据条件概率和先验概率就可以求出<strong>后验概率</strong>$P(Y=y_n|X=x_m)$,<br>这个求导的公式就是我们所说的贝叶斯定理：<br>$$<br>P(Y=y_n|X=x_m)=\frac{P(X=x_m|Y=y_n)P(Y=y_n)}{P(X=x_m)}<br>$$<br>后验概率$P(Y=y_n|X=x_m)$表示的是在特征集合$X=x_m$已经发生的前提下，目标变量$Y=y_n$发生的概率。<br>之前说过$x_m=\lbrace z_1,z_2,z_3,z_4,…\rbrace$，朴素贝叶斯模型假定$z_1,z_2,z_3,z_4,…$等特征是相互独立的，所以可以得到下面两个推导：<br>$$<br>P(X=x_m|Y=y_n)=P(z_1|Y=y_n)P(z_2|Y=y_n)P(z_3|Y=y_n)P(z_4|Y=y_n)…=\prod P(z_i|Y=y_n)<br>$$<br>$$<br>P(X=x_m)=P(z_1)P(z_2)P(z_3)P(z_4)…=\prod P(z_i)<br>$$</p>
+<p>整理后的贝叶斯定理如下：<br>$$<br>P(Y=y_n|X=x_m)=\frac{\prod P(z_i|Y=y_n)P(Y=y_n)}{\prod P(z_i)}<br>$$<br>而朴素贝叶斯模型选择各个目标分类中概率最大的那个分类作为模型预测的分类。</p>
+<p><strong>对于连续变量的特征</strong>，例如身高、体重等特征，模型假设这些特征值服从正态分布。这样就可以求出连续变量取值为$z_i$的概率为：<br>$$<br>P(z_i|Y=y_n)=g(z_i,\eta_n,\sigma_n)=\frac{1}{\sqrt{2\pi}\sigma_n}e^{-\frac{(z_i-\eta_n)^2}{2\sigma_n^2}}<br>$$<br>其中$\eta_n$是$Y=y_n$条件下$z_i$特征的均值，$\sigma_n$是$Y=y_n$条件下$z_i$特征的标准差。此外，我们也可以对连续变量进行离散化，将其变成非连续变量进行计算。</p>
+<p>另一个需要讨论的问题就是当$P(z_i|Y=y_n)=0$怎么办，当某个类别下某个特征项划分没有出现时，就会产生这种现象，这会令分类器质量大大降低。为了解决这个问题，我们引入<strong>Laplace校准</strong>，它的思想非常简单，把所有特征出现的次数都加上1，这样如果训练样本集数量充分大时，并不会对结果产生影响，并且解决了上述频率为0的尴尬局面。</p>
+<h3 id="二、朴素贝叶斯算法的R语言实现"><a href="#二、朴素贝叶斯算法的R语言实现" class="headerlink" title="二、朴素贝叶斯算法的R语言实现"></a>二、朴素贝叶斯算法的R语言实现</h3><p>使用的训练集数据是CDA数据挖掘课程的一个数据集，数据集记录了收入、学历、受欢迎程度、资产水平及相亲的结果。</p>
+<pre><code>orgData&lt;-read.csv(&quot;date_data2.csv&quot;)
+#提取如下字段进行建模
+orgData1&lt;-orgData[,c(&quot;income_rank&quot;,&quot;edueduclass&quot;,&quot;attractive_rank&quot;,&quot;assets_rank&quot;,&quot;Dated&quot;)]
+orgData1$income_rank=as.factor(orgData1$income_rank)
+orgData1$edueduclass=as.factor(orgData1$edueduclass)
+orgData1$attractive_rank=as.factor(orgData1$attractive_rank)
+orgData1$assets_rank=as.factor(orgData1$assets_rank)
+orgData1$Dated=as.factor(orgData1$Dated)</code></pre><p>建立朴素贝叶斯模型</p>
+<pre><code>library(bnlearn)
+bn=naive.bayes(orgData1,&quot;Dated&quot;)</code></pre><p>使用建立好的模型进行预测</p>
+<pre><code>pred = predict(bn,orgData1,prob = T)</code></pre><p>模型预测分类输出</p>
+<pre><code>orgData1$out=pred</code></pre><p>模型预测概率输出</p>
+<pre><code>orgData1$pred0=attr(pred,&quot;prob&quot;)[1,]#目标变量为0的概率
+orgData1$pred1=attr(pred,&quot;prob&quot;)[2,]#目标变量为1的概率</code></pre><p>打印混淆矩阵</p>
+<pre><code>&gt; confusionMatrix(orgData1$out,orgData1$Dated)
+Confusion Matrix and Statistics
+
+          Reference
+Prediction  0  1
+         0 45  4
+         1  5 46
+
+               Accuracy : 0.91          
+                 95% CI : (0.836, 0.958)
+    No Information Rate : 0.5           
+    P-Value [Acc &gt; NIR] : &lt;2e-16        
+
+                  Kappa : 0.82          
+ Mcnemar&apos;s Test P-Value : 1             
+
+            Sensitivity : 0.9000        
+            Specificity : 0.9200        
+         Pos Pred Value : 0.9184        
+         Neg Pred Value : 0.9020        
+             Prevalence : 0.5000        
+         Detection Rate : 0.4500        
+   Detection Prevalence : 0.4900        
+      Balanced Accuracy : 0.9100        
+
+       &apos;Positive&apos; Class : 0 </code></pre><p>打印后验概率表</p>
+<pre><code>rule=orgData1 %&gt;% distinct(income_rank,edueduclass,attractive_rank,assets_rank,pred1, .keep_all = FALSE)</code></pre><p><img src="https://pic.downk.cc/item/5e86e689504f4bcb04ab1479.png" alt=""></p>
+<blockquote>
+<p>版权声明：本文为大枫原创文章，转载请注明来源。</p>
+</blockquote>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="https://pic.downk.cc/item/5e86f540504f4bcb04b71ea8.jpg" alt="大枫 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/R%E8%AF%AD%E8%A8%80/" rel="tag"># R语言</a>
+          
+            <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AE%97%E6%B3%95%E5%AE%9E%E7%8E%B0/" rel="tag"># 机器学习算法实现</a>
+          
+            <a href="/tags/%E6%9C%B4%E7%B4%A0%E8%B4%9D%E5%8F%B6%E6%96%AF%E7%AE%97%E6%B3%95/" rel="tag"># 朴素贝叶斯算法</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/10/27/kNN%E7%AE%97%E6%B3%95%E5%AE%9E%E7%8E%B0_%E5%9F%BA%E4%BA%8ER%E8%AF%AD%E8%A8%80/" rel="next" title="kNN算法实现_基于R语言">
+                <i class="fa fa-chevron-left"></i> kNN算法实现_基于R语言
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/12/07/%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92%E7%AE%97%E6%B3%95%E5%AE%9E%E7%8E%B0_%E5%9F%BA%E4%BA%8ER%E8%AF%AD%E8%A8%80/" rel="prev" title="逻辑回归算法实现_基于R语言">
+                逻辑回归算法实现_基于R语言 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">大枫</p>
+              <p class="site-description motion-element" itemprop="description">这是最好的时代，也是最坏的时代</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#一、朴素贝叶斯算法的基础"><span class="nav-number">1.</span> <span class="nav-text">一、朴素贝叶斯算法的基础</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二、朴素贝叶斯算法的R语言实现"><span class="nav-number">2.</span> <span class="nav-text">二、朴素贝叶斯算法的R语言实现</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大枫</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

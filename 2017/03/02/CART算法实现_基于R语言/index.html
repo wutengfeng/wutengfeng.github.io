@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="R语言,机器学习算法实现,CART算法,决策树," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="CART算法(Classification And Regression Tree,分类和回归树)是决策树的一种，由Leo Breiman, Jerome Friedman, Richard Olshen与Charles Stone于1984年提出，既可用于分类也可用于回归。本文将主要介绍用于分类的CART算法的R语言实现。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CART算法实现_基于R语言">
+<meta property="og:url" content="http://yoursite.com/2017/03/02/CART%E7%AE%97%E6%B3%95%E5%AE%9E%E7%8E%B0_%E5%9F%BA%E4%BA%8ER%E8%AF%AD%E8%A8%80/index.html">
+<meta property="og:site_name" content="大枫的个人博客">
+<meta property="og:description" content="CART算法(Classification And Regression Tree,分类和回归树)是决策树的一种，由Leo Breiman, Jerome Friedman, Richard Olshen与Charles Stone于1984年提出，既可用于分类也可用于回归。本文将主要介绍用于分类的CART算法的R语言实现。">
+<meta property="og:image" content="https://pic.downk.cc/item/5e86e6ba504f4bcb04ab4164.png">
+<meta property="og:image" content="https://pic.downk.cc/item/5e86e6ba504f4bcb04ab4169.png">
+<meta property="og:image" content="https://pic.downk.cc/item/5e86e6ba504f4bcb04ab416e.png">
+<meta property="og:image" content="https://pic.downk.cc/item/5e86e6ba504f4bcb04ab4173.png">
+<meta property="og:image" content="https://pic.downk.cc/item/5e86e6ba504f4bcb04ab4176.png">
+<meta property="article:published_time" content="2017-03-02T04:57:17.000Z">
+<meta property="article:modified_time" content="2020-04-03T08:27:16.967Z">
+<meta property="article:author" content="大枫">
+<meta property="article:tag" content="R语言">
+<meta property="article:tag" content="机器学习算法实现">
+<meta property="article:tag" content="CART算法">
+<meta property="article:tag" content="决策树">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.downk.cc/item/5e86e6ba504f4bcb04ab4164.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/03/02/CART算法实现_基于R语言/"/>
+
+
+
+
+
+  <title>CART算法实现_基于R语言 | 大枫的个人博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?86773429461bd9f404e524d58c7b14ec";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大枫的个人博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">这是最好的时代，也是最坏的时代</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/02/CART%E7%AE%97%E6%B3%95%E5%AE%9E%E7%8E%B0_%E5%9F%BA%E4%BA%8ER%E8%AF%AD%E8%A8%80/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大枫">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大枫的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">CART算法实现_基于R语言</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-02T12:57:17+08:00">
+                2017-03-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>CART算法(Classification And Regression Tree,分类和回归树)是决策树的一种，由Leo Breiman, Jerome Friedman, Richard Olshen与Charles Stone于1984年提出，既可用于分类也可用于回归。本文将主要介绍用于分类的CART算法的R语言实现。</p>
+<a id="more"></a>
+<h3 id="一、数据读入"><a href="#一、数据读入" class="headerlink" title="一、数据读入"></a>一、数据读入</h3><p>数据来自Kaggle的cs-training.csv样本，该样本有15万条的个人消费类贷款数据。 <a href="https://www.kaggle.com/c/GiveMeSomeCredit/data" target="_blank" rel="noopener">数据下载地址</a></p>
+<p>数据说明：变量名(原始)为文件中变量名，由于原始变量名较长，所以就转换成较短的y、x1、x2…代替。</p>
+<table>
+<thead>
+<tr>
+<th align="left">变量名(原始)</th>
+<th align="center">变量名</th>
+<th align="center">变量类型</th>
+<th align="left">变量描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"></td>
+<td align="center">id</td>
+<td align="center">integer</td>
+<td align="left">序号</td>
+</tr>
+<tr>
+<td align="left">SeriousDlqin2yrs</td>
+<td align="center">y</td>
+<td align="center">Y/N</td>
+<td align="left">超过90天或更糟的逾期拖欠</td>
+</tr>
+<tr>
+<td align="left">RevolvingUtilizationOfUnsecuredLines</td>
+<td align="center">x1</td>
+<td align="center">percentage</td>
+<td align="left">无担保放款的循环利用：除了不动产和像车贷那样除以信用额度总和的无分期付款债务的信用卡和个人信用额度总额</td>
+</tr>
+<tr>
+<td align="left">age</td>
+<td align="center">x2</td>
+<td align="center">integer</td>
+<td align="left">借款人当时的年龄</td>
+</tr>
+<tr>
+<td align="left">NumberOfTime30-59DaysPastDueNotWorse</td>
+<td align="center">x3</td>
+<td align="center">integer</td>
+<td align="left">35-59天逾期但不糟糕次数</td>
+</tr>
+<tr>
+<td align="left">DebtRatio</td>
+<td align="center">x4</td>
+<td align="center">percentage</td>
+<td align="left">负债比率</td>
+</tr>
+<tr>
+<td align="left">MonthlyIncome</td>
+<td align="center">x5</td>
+<td align="center">real</td>
+<td align="left">月收入</td>
+</tr>
+<tr>
+<td align="left">NumberOfOpenCreditLinesAndLoans</td>
+<td align="center">x6</td>
+<td align="center">integer</td>
+<td align="left">开放式信贷和贷款数量，开放式贷款（分期付款如汽车贷款或抵押贷款）和信贷（如信用卡）的数量</td>
+</tr>
+<tr>
+<td align="left">NumberOfTimes90DaysLate</td>
+<td align="center">x7</td>
+<td align="center">integer</td>
+<td align="left">90天逾期次数：借款者有90天或更高逾期的次数</td>
+</tr>
+<tr>
+<td align="left">NumberRealEstateLoansOrLines</td>
+<td align="center">x8</td>
+<td align="center">integer</td>
+<td align="left">不动产贷款或额度数量：抵押贷款和不动产放款包括房屋净值信贷额度</td>
+</tr>
+<tr>
+<td align="left">NumberOfTime60-89DaysPastDueNotWorse</td>
+<td align="center">x9</td>
+<td align="center">integer</td>
+<td align="left">60-89天逾期但不糟糕次数：借款人在在过去两年内有60-89天逾期还款但不糟糕的次数</td>
+</tr>
+<tr>
+<td align="left">NumberOfDependents</td>
+<td align="center">x10</td>
+<td align="center">integer</td>
+<td align="left">家属数量：不包括本人在内的家属数量</td>
+</tr>
+</tbody></table>
+<pre><code>#读入训练数据集
+traindata&lt;-read.csv(&quot;cs-training.csv&quot;,header = TRUE)
+#原始变量名太长,重命名
+names(traindata)=c(&quot;id&quot;,&quot;y&quot;,&quot;x1&quot;,&quot;x2&quot;,&quot;x3&quot;,&quot;x4&quot;,&quot;x5&quot;,&quot;x6&quot;,&quot;x7&quot;,&quot;x8&quot;,&quot;x9&quot;,&quot;x10&quot;)
+#查看前6行数据,检查变量名是否更新完成
+head(traindata)
+#将因变量转变为因子格式
+traindata$y=as.factor(traindata$y)</code></pre><p>得到下面的结果，可以看到，变量名已经更新完成</p>
+<pre><code>&gt; head(traindata)
+  id y        x1 x2 x3         x4    x5 x6 x7 x8 x9 x10
+1  1 1 0.7661266 45  2 0.80298213  9120 13  0  6  0   2
+2  2 0 0.9571510 40  0 0.12187620  2600  4  0  0  0   1
+3  3 0 0.6581801 38  1 0.08511338  3042  2  1  0  0   0
+4  4 0 0.2338098 30  0 0.03604968  3300  5  0  0  0   0
+5  5 0 0.9072394 49  1 0.02492570 63588  7  0  1  0   0
+6  6 0 0.2131787 74  0 0.37560697  3500  3  0  1  0   1</code></pre><h3 id="二、建立训练集和测试集"><a href="#二、建立训练集和测试集" class="headerlink" title="二、建立训练集和测试集"></a>二、建立训练集和测试集</h3><pre><code>select&lt;-sample(1:nrow(traindata),length(traindata$id)*0.7) #随机选择70%的行数
+train=traindata[select,]#随机选择70%的数据做训练集
+test=traindata[-select,]#随机选择30%的数据做训练集</code></pre><h3 id="三、建立CART模型"><a href="#三、建立CART模型" class="headerlink" title="三、建立CART模型"></a>三、建立CART模型</h3><h4 id="一-设置前剪枝的条件"><a href="#一-设置前剪枝的条件" class="headerlink" title="(一)设置前剪枝的条件"></a>(一)设置前剪枝的条件</h4><pre><code>tc&lt;-rpart.control(minsplit = 50,minbucket = 20,maxdepth = 30,xval =10,cp = 0.001)</code></pre><ul>
+<li>minsplit 是最小分支节点数，这里指大于等于50，那么该节点会继续分划下去，否则停止  </li>
+<li>minbucket 叶子节点最小样本数  </li>
+<li>maxdepth 树的深度  </li>
+<li>xval 是交叉验证的次数，xval=10就是10折交叉验证(将数据集分为10组，进行10次拟合，第i次拟合用除了第i组以外的数据训练，用第i组进行预测；目的是减少错误分类。  </li>
+<li>cp 全称为complexity parameter，指某个点的复杂度，对每一步拆分,模型的拟合优度必须提高的程度，用来节省剪枝浪费的不必要的时间</li>
+</ul>
+<h4 id="二-建立决策树"><a href="#二-建立决策树" class="headerlink" title="(二)建立决策树"></a>(二)建立决策树</h4><pre><code>#搭建公式
+formular=y~x1+x2+x3+x4+x5+x6+x7+x8+x9+x10
+#建设模型，参数为举例说明，具体建模参数可以自行修改
+rpart.mod=rpart(formular,data = train,method = &quot;class&quot;,
+                parms = list(prior=c(0.6,0.4),loss=matrix(c(0,1,2,0),nrow=2),split=&quot;gini&quot;),
+                control = tc)</code></pre><ul>
+<li>fomular 回归方程形式: 例如 y~ x 1+ x2+ x3。  </li>
+<li>data 数据: 包含前面方程中变量的数据框( data frame) 。</li>
+<li>na.action 缺失数据的处理办法: 默认办法是删除因变量缺失的观测而保留自变量缺失的观测。  </li>
+<li>method 根据树末端的数据类型选择相应因变量的分割方法,本参数有四种取值: 连续型&gt;anova; 离散型&gt;class; 计数型( 泊松过程)&gt;poisson; 生存分析型&gt;exp。程序会根据因变量的类型自动选择方法, 但一般情况下最好还是指明本参数, 以便让程序清楚做哪一种树模型。    </li>
+<li>parms 用来设置三个参数:先验概率、损失矩阵、分类纯度的度量方法。anova没有参数；poisson分割有一个参数，先验分布变异系数的比率，默认为1；生存分布的参数和poisson一致；对离散型，可以设置先验分布的分布的概率(prior)，损失矩阵(loss)，分类纯度(split）；<ul>
+<li>priors必须为正值且和为1</li>
+<li>loss为代价矩阵，必须对角为0且非对角为正数，代价矩阵的行代表实际的分类，列代表预测的分类，在剪枝的时候，叶子节点的加权误差与父节点的误差进行比较，考虑损失矩阵的时候，从将“减少-误差”调整为“减少-损失” </li>
+<li>split可以是gini（基尼系数）或者information（信息增益）；    </li>
+</ul>
+</li>
+<li>control 控制每个节点上的最小样本量、交叉验证的次数、复杂性参量: 即cp: complexity pamemeter, 这个参数意味着对每一步拆分, 模型的拟合优度必须提高的程度, 等等</li>
+</ul>
+<h4 id="二-后剪枝过程"><a href="#二-后剪枝过程" class="headerlink" title="(二)后剪枝过程"></a>(二)后剪枝过程</h4><p>在分类回归树中可以使用的后剪枝方法有很多，比如：代价复杂度剪枝、最小误差剪枝、悲观误差剪枝等等，这里我们只介绍代价复杂度剪枝法。<br>rpart包提供了复杂度损失修剪的修剪方法，rpart.mod$cp会告诉分裂到每一层，cp(复杂度)是多少，平均相对误差是多少；交叉验证的估计误差（xerror）、标准误差(xstd)、平均相对误差（xerror±xstd)；也可以通过plotcp把cp的折线图打印出来。</p>
+<pre><code>&gt; rpart.mod$cp
+            CP nsplit rel error    xerror        xstd
+1  0.454950358      0 1.0000000 1.0247830 0.009133535
+2  0.040251306      1 0.5450496 0.5487305 0.006440166
+3  0.019101365      2 0.5047983 0.5085355 0.005126169
+4  0.006685254      3 0.4856970 0.4898545 0.004781973
+5  0.004512247      4 0.4790117 0.4738762 0.004770271
+6  0.003859716     10 0.4484181 0.4541848 0.005548255
+7  0.001652621     13 0.4368389 0.4427585 0.005900042
+8  0.001419401     15 0.4335337 0.4410733 0.005862466
+9  0.001371489     16 0.4321143 0.4391973 0.005865430
+10 0.001242517     19 0.4279998 0.4397694 0.005899587
+11 0.001201155     21 0.4255148 0.4387756 0.005886477
+12 0.001048985     22 0.4243136 0.4368511 0.005834060
+13 0.001019105     23 0.4232646 0.4368356 0.005817677
+14 0.001000000     24 0.4222455 0.4367234 0.005817659
+&gt; plotcp(rpart.mod)</code></pre><p><img src="https://pic.downk.cc/item/5e86e6ba504f4bcb04ab4164.png" alt=""></p>
+<p>复杂度剪枝法满足的条件是，在交叉验证的估计误差(xerror)尽量小的情况下（不一定是最小值，而是允许最小误差的一个标准差(xstd)之内），选择尽量大的cp值。我们这里选择cp=0.001652621。</p>
+<pre><code>&gt; rpart.mod.pru&lt;-prune(rpart.mod,cp=0.001652621)
+&gt; rpart.mod.pru$cp
+           CP nsplit rel error    xerror        xstd
+1 0.454950358      0 1.0000000 1.0247830 0.009133535
+2 0.040251306      1 0.5450496 0.5487305 0.006440166
+3 0.019101365      2 0.5047983 0.5085355 0.005126169
+4 0.006685254      3 0.4856970 0.4898545 0.004781973
+5 0.004512247      4 0.4790117 0.4738762 0.004770271
+6 0.003859716     10 0.4484181 0.4541848 0.005548255
+7 0.001652621     13 0.4368389 0.4427585 0.005900042
+8 0.001652621     15 0.4335337 0.4410733 0.005862466</code></pre><p>当然，我们也可以选择具有最小xerror的cp的方法，代码如下：</p>
+<pre><code>rpart.mod.pru&lt;-prune(rpart.mod,cp=rpart.mod$cptable[which.min(rpart.mod$cptable[,&quot;xerror&quot;])])</code></pre><h3 id="四、画出最终的决策树"><a href="#四、画出最终的决策树" class="headerlink" title="四、画出最终的决策树"></a>四、画出最终的决策树</h3><h4 id="方法一：使用rpart-plot"><a href="#方法一：使用rpart-plot" class="headerlink" title="方法一：使用rpart.plot()"></a>方法一：使用rpart.plot()</h4><pre><code>rpart.plot(rpart.mod.pru,branch=1,extra = 102,under = TRUE,faclen = 0,cex = 0.7,main=&quot;CART&quot;)</code></pre><p><img src="https://pic.downk.cc/item/5e86e6ba504f4bcb04ab4169.png" alt=""></p>
+<h4 id="方法二：使用plot-和text"><a href="#方法二：使用plot-和text" class="headerlink" title="方法二：使用plot()和text()"></a>方法二：使用plot()和text()</h4><pre><code>plot(rpart.mod.pru)
+text(rpart.mod.pru,all = TRUE,digits = 7,use.n = TRUE,cex=0.9,xpd=TRUE)</code></pre><p><img src="https://pic.downk.cc/item/5e86e6ba504f4bcb04ab416e.png" alt=""></p>
+<h4 id="方法三：使用draw-tree"><a href="#方法三：使用draw-tree" class="headerlink" title="方法三：使用draw.tree()"></a>方法三：使用draw.tree()</h4><pre><code>draw.tree(rpart.mod.pru) </code></pre><p><img src="https://pic.downk.cc/item/5e86e6ba504f4bcb04ab4173.png" alt=""></p>
+<h3 id="五、模型评估"><a href="#五、模型评估" class="headerlink" title="五、模型评估"></a>五、模型评估</h3><h4 id="一-参数的重要性"><a href="#一-参数的重要性" class="headerlink" title="(一)参数的重要性"></a>(一)参数的重要性</h4><pre><code>&gt; rpart.mod.pru$variable.importance
+         x1          x3          x7          x9          x6          x2          x8          x4 
+11071.77272  4437.97071  4318.85268  1829.67024   898.98357   227.93847    35.51209    11.18615 </code></pre><h4 id="二-ROC曲线"><a href="#二-ROC曲线" class="headerlink" title="(二)ROC曲线"></a>(二)ROC曲线</h4><pre><code>test.pre&lt;-predict(rpart.mod.pru,test)
+plot(roc(test$y,test.pre[,2]), print.auc=TRUE, auc.polygon=TRUE, grid=c(0.1, 0.2),
+     grid.col=c(&quot;green&quot;, &quot;red&quot;), max.auc.polygon=TRUE,
+     auc.polygon.col=&quot;skyblue&quot;, print.thres=TRUE)</code></pre><p><img src="https://pic.downk.cc/item/5e86e6ba504f4bcb04ab4176.png" alt=""></p>
+<h4 id="三-混淆矩阵"><a href="#三-混淆矩阵" class="headerlink" title="(三)混淆矩阵"></a>(三)混淆矩阵</h4><pre><code>&gt; test$pre_p&lt;-predict(rpart.mod.pru,test)[,2]
+&gt; test$pre=0
+&gt; test$pre[which(test$pre_p&gt;0.431)]=1
+&gt; confusionMatrix(test$pre,test$y,positive=&apos;1&apos;)
+Confusion Matrix and Statistics
+
+          Reference
+Prediction     0     1
+         0 32997   703
+         1  8953  2347
+
+               Accuracy : 0.7854          
+                 95% CI : (0.7816, 0.7892)
+    No Information Rate : 0.9322          
+    P-Value [Acc &gt; NIR] : 1               
+
+                  Kappa : 0.2467          
+ Mcnemar&apos;s Test P-Value : &lt;2e-16          
+
+            Sensitivity : 0.76951         
+            Specificity : 0.78658         
+         Pos Pred Value : 0.20770         
+         Neg Pred Value : 0.97914         
+             Prevalence : 0.06778         
+         Detection Rate : 0.05216         
+   Detection Prevalence : 0.25111         
+      Balanced Accuracy : 0.77804         
+
+       &apos;Positive&apos; Class : 1     </code></pre><blockquote>
+<p>版权声明：本文为大枫原创文章，转载请注明来源。</p>
+</blockquote>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="https://pic.downk.cc/item/5e86f540504f4bcb04b71ea8.jpg" alt="大枫 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/R%E8%AF%AD%E8%A8%80/" rel="tag"># R语言</a>
+          
+            <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AE%97%E6%B3%95%E5%AE%9E%E7%8E%B0/" rel="tag"># 机器学习算法实现</a>
+          
+            <a href="/tags/CART%E7%AE%97%E6%B3%95/" rel="tag"># CART算法</a>
+          
+            <a href="/tags/%E5%86%B3%E7%AD%96%E6%A0%91/" rel="tag"># 决策树</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/12/07/%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92%E7%AE%97%E6%B3%95%E5%AE%9E%E7%8E%B0_%E5%9F%BA%E4%BA%8ER%E8%AF%AD%E8%A8%80/" rel="next" title="逻辑回归算法实现_基于R语言">
+                <i class="fa fa-chevron-left"></i> 逻辑回归算法实现_基于R语言
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/05/30/%E4%BF%A1%E7%94%A8%E8%AF%84%E5%88%86%E5%8D%A1%E6%A8%A1%E5%9E%8B_%E5%9F%BA%E4%BA%8ER%E8%AF%AD%E8%A8%80/" rel="prev" title="信用评分卡模型_基于R语言">
+                信用评分卡模型_基于R语言 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">大枫</p>
+              <p class="site-description motion-element" itemprop="description">这是最好的时代，也是最坏的时代</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#一、数据读入"><span class="nav-number">1.</span> <span class="nav-text">一、数据读入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二、建立训练集和测试集"><span class="nav-number">2.</span> <span class="nav-text">二、建立训练集和测试集</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#三、建立CART模型"><span class="nav-number">3.</span> <span class="nav-text">三、建立CART模型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#一-设置前剪枝的条件"><span class="nav-number">3.1.</span> <span class="nav-text">(一)设置前剪枝的条件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二-建立决策树"><span class="nav-number">3.2.</span> <span class="nav-text">(二)建立决策树</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二-后剪枝过程"><span class="nav-number">3.3.</span> <span class="nav-text">(二)后剪枝过程</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#四、画出最终的决策树"><span class="nav-number">4.</span> <span class="nav-text">四、画出最终的决策树</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#方法一：使用rpart-plot"><span class="nav-number">4.1.</span> <span class="nav-text">方法一：使用rpart.plot()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#方法二：使用plot-和text"><span class="nav-number">4.2.</span> <span class="nav-text">方法二：使用plot()和text()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#方法三：使用draw-tree"><span class="nav-number">4.3.</span> <span class="nav-text">方法三：使用draw.tree()</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#五、模型评估"><span class="nav-number">5.</span> <span class="nav-text">五、模型评估</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#一-参数的重要性"><span class="nav-number">5.1.</span> <span class="nav-text">(一)参数的重要性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二-ROC曲线"><span class="nav-number">5.2.</span> <span class="nav-text">(二)ROC曲线</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#三-混淆矩阵"><span class="nav-number">5.3.</span> <span class="nav-text">(三)混淆矩阵</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大枫</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="R语言,机器学习算法实现,逻辑回归算法," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="逻辑回归(Logistic Regression)模型和线性回归非常相似，可以说就是在逻辑回归的基础上加上了一步逻辑转换，也就是因为这个转换，使逻辑回归模型非常适用于二分类问题的概率预测。本文主要详述逻辑回归模型的基础以及逻辑回归模型的R语言实现。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="逻辑回归算法实现_基于R语言">
+<meta property="og:url" content="http://yoursite.com/2016/12/07/%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92%E7%AE%97%E6%B3%95%E5%AE%9E%E7%8E%B0_%E5%9F%BA%E4%BA%8ER%E8%AF%AD%E8%A8%80/index.html">
+<meta property="og:site_name" content="大枫的个人博客">
+<meta property="og:description" content="逻辑回归(Logistic Regression)模型和线性回归非常相似，可以说就是在逻辑回归的基础上加上了一步逻辑转换，也就是因为这个转换，使逻辑回归模型非常适用于二分类问题的概率预测。本文主要详述逻辑回归模型的基础以及逻辑回归模型的R语言实现。">
+<meta property="og:image" content="https://pic.downk.cc/item/5e86e697504f4bcb04ab2081.png">
+<meta property="og:image" content="https://pic.downk.cc/item/5e86e697504f4bcb04ab2083.png">
+<meta property="og:image" content="https://pic.downk.cc/item/5e86e697504f4bcb04ab2085.png">
+<meta property="og:image" content="https://pic.downk.cc/item/5e86e697504f4bcb04ab2089.png">
+<meta property="article:published_time" content="2016-12-07T13:57:17.000Z">
+<meta property="article:modified_time" content="2020-04-03T08:27:52.941Z">
+<meta property="article:author" content="大枫">
+<meta property="article:tag" content="R语言">
+<meta property="article:tag" content="机器学习算法实现">
+<meta property="article:tag" content="逻辑回归算法">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.downk.cc/item/5e86e697504f4bcb04ab2081.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/12/07/逻辑回归算法实现_基于R语言/"/>
+
+
+
+
+
+  <title>逻辑回归算法实现_基于R语言 | 大枫的个人博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?86773429461bd9f404e524d58c7b14ec";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大枫的个人博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">这是最好的时代，也是最坏的时代</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/12/07/%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92%E7%AE%97%E6%B3%95%E5%AE%9E%E7%8E%B0_%E5%9F%BA%E4%BA%8ER%E8%AF%AD%E8%A8%80/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大枫">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大枫的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">逻辑回归算法实现_基于R语言</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-12-07T21:57:17+08:00">
+                2016-12-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>逻辑回归(Logistic Regression)模型和线性回归非常相似，可以说就是在逻辑回归的基础上加上了一步逻辑转换，也就是因为这个转换，使逻辑回归模型非常适用于二分类问题的概率预测。本文主要详述逻辑回归模型的基础以及逻辑回归模型的R语言实现。</p>
+<a id="more"></a>
+
+<h3 id="一、逻辑回归模型原理"><a href="#一、逻辑回归模型原理" class="headerlink" title="一、逻辑回归模型原理"></a>一、逻辑回归模型原理</h3><p>首先要讲一下线性回归在预测分类事件中的缺点:线性回归模型的泛化能力很差，如果训练集存在噪点，会导致模型的结果特别差，不同样本建立起来的模型分割点不同；下图中根据年龄预测是否成年的分类问题，斜线就是根据训练集拟合出来的线性回归模型，横线就是该模型的分割点，可以看出，由于有异常值的存在，导致第二个线性回归模型的分割点发生了变动。</p>
+<p><img src="https://pic.downk.cc/item/5e86e697504f4bcb04ab2081.png" alt=""><br><img src="https://pic.downk.cc/item/5e86e697504f4bcb04ab2083.png" alt=""></p>
+<p>另外，线性回归模型的取值可以取到无穷小或者无穷大，不符合而分类问题的取值要在[0,1]中间，所以在分类问题中就需要对线性回归模型的结果进行转化，而所用的转化函数就是Sigmoid函数。</p>
+<p>$$<br>S(x)=\frac{1}{1+e^{-x}}<br>$$</p>
+<p>下图就是上述线性回归模型经过sigmod函数转变之后，取值范围就变成了[0,1],同时模型在分裂点(x=0)区域特别敏感，在x&gt;&gt;0或者x&lt;&lt;0都不是特别敏感，这样就避免了噪点带来的影响，分割概率稳定在0.5附近。<br><img src="https://pic.downk.cc/item/5e86e697504f4bcb04ab2085.png" alt=""><br>sigmoid函数的S(x)即为我们所预测的分类事件发生的概率P，为了和线性回归模型的形式一致，我们可以通过sigmoid的反函数来展现逻辑回归的方程，sigmoid的反函数就是我们所说的logit变换公式：</p>
+<p>$$<br>S^{-1}(x)=\ln(\frac{p(x)}{1-p(x)})<br>$$<br>$$<br>Odds=\frac{p(x)}{1-p(x)}<br>$$<br>其中P(x)是分类事件发生的概率，取对数的部分就是我们平常说的Odds Ratios(优势比)，这个指标表示的是一个事件发生的概率与该事件不发生概率的比值，当Odds＝1的时候说明，这个事件发生的概率和不发生的概率相同，都为50%。</p>
+<p>综上，逻辑回归模型的形式为：<br>$$<br>ln(\frac{p(x)}{1-p(x)})=\alpha_1x_1+\alpha_2x_2+…+\beta<br>$$</p>
+<p>求得分类事件发生的概率为：<br>$$<br>P(x)=\frac{1}{1+e^{-(\alpha_1x_1+\alpha_2x_2+…+\beta)}}<br>$$</p>
+<h3 id="二、逻辑回归模型R语言实现"><a href="#二、逻辑回归模型R语言实现" class="headerlink" title="二、逻辑回归模型R语言实现"></a>二、逻辑回归模型R语言实现</h3><pre><code>accepts&lt;-read.csv(&quot;accepts.csv&quot;)</code></pre><p>读取数据，accepts是一个汽车贷款违约纪录的一个数据集，字段说明如下：</p>
+<table>
+<thead>
+<tr>
+<th align="left">名称</th>
+<th align="left">中文含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">application_id</td>
+<td align="left">申请者ID</td>
+</tr>
+<tr>
+<td align="left">account_number</td>
+<td align="left">帐户号</td>
+</tr>
+<tr>
+<td align="left">bad_ind</td>
+<td align="left">是否违约</td>
+</tr>
+<tr>
+<td align="left">vehicle_year</td>
+<td align="left">汽车购买时间</td>
+</tr>
+<tr>
+<td align="left">vehicle_make</td>
+<td align="left">汽车制造商</td>
+</tr>
+<tr>
+<td align="left">bankruptcy_ind</td>
+<td align="left">曾经破产标识</td>
+</tr>
+<tr>
+<td align="left">tot_derog</td>
+<td align="left">五年内信用不良事件数量(比如手机欠费消号)</td>
+</tr>
+<tr>
+<td align="left">tot_tr</td>
+<td align="left">全部帐户数量</td>
+</tr>
+<tr>
+<td align="left">age_oldest_tr</td>
+<td align="left">最久账号存续时间(月)</td>
+</tr>
+<tr>
+<td align="left">tot_open_tr</td>
+<td align="left">在使用帐户数量</td>
+</tr>
+<tr>
+<td align="left">tot_rev_tr</td>
+<td align="left">在使用可循环贷款帐户数量(比如信用卡)</td>
+</tr>
+<tr>
+<td align="left">tot_rev_debt</td>
+<td align="left">在使用可循环贷款帐户余额(比如信用卡欠款)</td>
+</tr>
+<tr>
+<td align="left">tot_rev_line</td>
+<td align="left">可循环贷款帐户限额(信用卡授权额度)</td>
+</tr>
+<tr>
+<td align="left">rev_util</td>
+<td align="left">可循环贷款帐户使用比例(余额/限额)</td>
+</tr>
+<tr>
+<td align="left">fico_score</td>
+<td align="left">FICO打分</td>
+</tr>
+<tr>
+<td align="left">purch_price</td>
+<td align="left">汽车购买金额(元)</td>
+</tr>
+<tr>
+<td align="left">msrp</td>
+<td align="left">建议售价</td>
+</tr>
+<tr>
+<td align="left">down_pyt</td>
+<td align="left">分期付款的首次交款</td>
+</tr>
+<tr>
+<td align="left">loan_term</td>
+<td align="left">贷款期限(月)</td>
+</tr>
+<tr>
+<td align="left">loan_amt</td>
+<td align="left">贷款金额</td>
+</tr>
+<tr>
+<td align="left">ltv</td>
+<td align="left">贷款金额/建议售价*100</td>
+</tr>
+<tr>
+<td align="left">tot_income</td>
+<td align="left">月均收入(元)</td>
+</tr>
+<tr>
+<td align="left">veh_mileage</td>
+<td align="left">行使历程(Mile)</td>
+</tr>
+<tr>
+<td align="left">used_ind</td>
+<td align="left">是否使用</td>
+</tr>
+<tr>
+<td align="left">weight</td>
+<td align="left">样本权重</td>
+</tr>
+<tr>
+<td align="left">剔除样本中的缺失值</td>
+<td align="left"></td>
+</tr>
+</tbody></table>
+<pre><code>accepts&lt;-na.omit(accepts)</code></pre><p>将目标变量转变为因子形式</p>
+<pre><code>accepts$bad_ind&lt;-as.factor(accepts$bad_ind)</code></pre><p>分割训练集和测试集</p>
+<pre><code>select&lt;-sample(1:nrow(accepts),length(accepts$application_id)*0.7)
+train=accepts[select,]
+test=accepts[-select,]</code></pre><p>建立逻辑回归模型</p>
+<pre><code>lg&lt;-glm(bad_ind~fico_score+bankruptcy_ind+tot_derog+age_oldest_tr+rev_util+ltv+veh_mileage,family = binomial(link = &apos;logit&apos;))</code></pre><p>打印出模型的描述：发现有个变量P值检验未通过</p>
+<pre><code>&gt; summary(lg)
+
+Call:
+glm(formula = bad_ind ~ fico_score + bankruptcy_ind + tot_derog + 
+    age_oldest_tr + rev_util + ltv + veh_mileage, family = binomial(link = &quot;logit&quot;))
+
+Deviance Residuals: 
+    Min       1Q   Median       3Q      Max  
+-2.5219  -0.6763  -0.4425  -0.2180   3.0337  
+
+Coefficients:
+                  Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)      5.254e+00  7.914e-01   6.639 3.17e-11 ***
+fico_score      -1.373e-02  1.121e-03 -12.244  &lt; 2e-16 ***
+bankruptcy_indY -5.487e-01  1.906e-01  -2.878   0.0040 ** 
+tot_derog        3.744e-02  1.591e-02   2.353   0.0186 *  
+age_oldest_tr   -3.498e-03  6.139e-04  -5.699 1.21e-08 ***
+rev_util         1.249e-03  5.850e-04   2.135   0.0328 *  
+ltv              3.002e-02  3.407e-03   8.812  &lt; 2e-16 ***
+veh_mileage      4.708e-07  1.440e-06   0.327   0.7436    
+---
+Signif. codes:  0 &apos;***&apos; 0.001 &apos;**&apos; 0.01 &apos;*&apos; 0.05 &apos;.&apos; 0.1 &apos; &apos; 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 3011.9  on 3046  degrees of freedom
+Residual deviance: 2550.3  on 3039  degrees of freedom
+AIC: 2566.3
+
+Number of Fisher Scoring iterations: 5</code></pre><p>R语言为逻辑回归模型提供了三种变量筛选方法：</p>
+<ul>
+<li>向前引入法( direction=”forward”)：刚开始没有变量，之后逐个把相关的变量放到模型中</li>
+<li>向后剔除法(direction =”backward”)：刚开始全部变量，之后逐个把不相关的变量剔除出去</li>
+<li>逐步回归法(direction =”both”)：结合上面两种方法</li>
+</ul>
+<p>这里我们使用逐步回归法来做变量筛选，最后之前P值检验没通过的veh_mileage被剔除了</p>
+<pre><code>lg_ms &lt;- step(lg,direction=&quot;both&quot;)
+&gt; summary(lg_ms)
+
+Call:
+glm(formula = bad_ind ~ fico_score + bankruptcy_ind + tot_derog + 
+    age_oldest_tr + rev_util + ltv, family = binomial(link = &quot;logit&quot;))
+
+Deviance Residuals: 
+    Min       1Q   Median       3Q      Max  
+-2.5179  -0.6775  -0.4410  -0.2164   3.0326  
+
+Coefficients:
+                  Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)      5.2653435  0.7907636   6.659 2.77e-11 ***
+fico_score      -0.0137435  0.0011197 -12.275  &lt; 2e-16 ***
+bankruptcy_indY -0.5501408  0.1905979  -2.886   0.0039 ** 
+tot_derog        0.0375763  0.0159036   2.363   0.0181 *  
+age_oldest_tr   -0.0035001  0.0006140  -5.701 1.19e-08 ***
+rev_util         0.0012479  0.0005844   2.135   0.0327 *  
+ltv              0.0301192  0.0033946   8.873  &lt; 2e-16 ***
+---
+Signif. codes:  0 &apos;***&apos; 0.001 &apos;**&apos; 0.01 &apos;*&apos; 0.05 &apos;.&apos; 0.1 &apos; &apos; 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 3011.9  on 3046  degrees of freedom
+Residual deviance: 2550.4  on 3040  degrees of freedom
+AIC: 2564.4
+
+Number of Fisher Scoring iterations: 5</code></pre><p>检查各变量是否存在多重共线性的问题，可以看到各变量vif都小于10，不存在多重共线性情况</p>
+<pre><code>&gt; vif(lg_ms)
+    fico_score bankruptcy_ind      tot_derog  age_oldest_tr       rev_util            ltv 
+      1.336987       1.156350       1.433134       1.077136       1.044721       1.042412 </code></pre><p>用测试集检验模型，并画出ROC曲线    ,可以得到AUC为0.778，最优分割点为0.205</p>
+<pre><code>test$lg_p&lt;-predict(lg_ms,test)
+test$p&lt;-(1/(1+exp(-1*test$lg_p)))
+plot(roc(test$bad_ind,test$p), print.auc=TRUE, auc.polygon=TRUE, grid=c(0.1, 0.2),
+     grid.col=c(&quot;green&quot;, &quot;red&quot;), max.auc.polygon=TRUE,
+     auc.polygon.col=&quot;skyblue&quot;, print.thres=TRUE)</code></pre><p> <img src="https://pic.downk.cc/item/5e86e697504f4bcb04ab2089.png" alt=""></p>
+<p> 对测试集做出预测，同时生成混淆矩阵</p>
+<pre><code>test$out&lt;-1
+test[test$p&lt;0.205,]$out&lt;-0
+confusionMatrix(test$out,test$bad_ind,positive=&apos;1&apos;)</code></pre><p>结果如下</p>
+<pre><code>&gt; confusionMatrix(test$out,test$bad_ind,positive=&apos;1&apos;)
+Confusion Matrix and Statistics
+
+          Reference
+Prediction   0   1
+         0 738  62
+         1 335 172
+
+               Accuracy : 0.6963          
+                 95% CI : (0.6705, 0.7211)
+    No Information Rate : 0.821           
+    P-Value [Acc &gt; NIR] : 1               
+
+                  Kappa : 0.2904          
+ Mcnemar&apos;s Test P-Value : &lt;2e-16          
+
+            Sensitivity : 0.7350          
+            Specificity : 0.6878          
+         Pos Pred Value : 0.3393          
+         Neg Pred Value : 0.9225          
+             Prevalence : 0.1790          
+         Detection Rate : 0.1316          
+   Detection Prevalence : 0.3879          
+      Balanced Accuracy : 0.7114          
+
+       &apos;Positive&apos; Class : 1     </code></pre><blockquote>
+<p>版权声明：本文为大枫原创文章，转载请注明来源。</p>
+</blockquote>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="https://pic.downk.cc/item/5e86f540504f4bcb04b71ea8.jpg" alt="大枫 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/R%E8%AF%AD%E8%A8%80/" rel="tag"># R语言</a>
+          
+            <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AE%97%E6%B3%95%E5%AE%9E%E7%8E%B0/" rel="tag"># 机器学习算法实现</a>
+          
+            <a href="/tags/%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92%E7%AE%97%E6%B3%95/" rel="tag"># 逻辑回归算法</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/11/27/%E6%9C%B4%E7%B4%A0%E8%B4%9D%E5%8F%B6%E6%96%AF%E7%AE%97%E6%B3%95%E5%AE%9E%E7%8E%B0_%E5%9F%BA%E4%BA%8ER%E8%AF%AD%E8%A8%80/" rel="next" title="朴素贝叶斯算法实现_基于R语言">
+                <i class="fa fa-chevron-left"></i> 朴素贝叶斯算法实现_基于R语言
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/03/02/CART%E7%AE%97%E6%B3%95%E5%AE%9E%E7%8E%B0_%E5%9F%BA%E4%BA%8ER%E8%AF%AD%E8%A8%80/" rel="prev" title="CART算法实现_基于R语言">
+                CART算法实现_基于R语言 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">大枫</p>
+              <p class="site-description motion-element" itemprop="description">这是最好的时代，也是最坏的时代</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#一、逻辑回归模型原理"><span class="nav-number">1.</span> <span class="nav-text">一、逻辑回归模型原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二、逻辑回归模型R语言实现"><span class="nav-number">2.</span> <span class="nav-text">二、逻辑回归模型R语言实现</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大枫</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

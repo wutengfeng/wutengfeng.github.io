@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="R语言,机器学习算法实现,KNN算法," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="“k最近邻算法(k-Nearest Neighbor，kNN)分类算法是机器学习算法中最简单的算法之一，所谓k最近邻，就是k个最近的邻居的意思，说的是每个样本都可以用它最接近的k个邻居来代表。kNN算法的核心思想是如果一个样本在特征空间中的k个最相邻的样本中的大多数属于某一个类别，则该样本也属于这个类别，并具有这个类别上样本的特性。”——kNN算法_百科">
+<meta property="og:type" content="article">
+<meta property="og:title" content="kNN算法实现_基于R语言">
+<meta property="og:url" content="http://yoursite.com/2016/10/27/kNN%E7%AE%97%E6%B3%95%E5%AE%9E%E7%8E%B0_%E5%9F%BA%E4%BA%8ER%E8%AF%AD%E8%A8%80/index.html">
+<meta property="og:site_name" content="大枫的个人博客">
+<meta property="og:description" content="“k最近邻算法(k-Nearest Neighbor，kNN)分类算法是机器学习算法中最简单的算法之一，所谓k最近邻，就是k个最近的邻居的意思，说的是每个样本都可以用它最接近的k个邻居来代表。kNN算法的核心思想是如果一个样本在特征空间中的k个最相邻的样本中的大多数属于某一个类别，则该样本也属于这个类别，并具有这个类别上样本的特性。”——kNN算法_百科">
+<meta property="og:image" content="https://pic.downk.cc/item/5e86e67d504f4bcb04ab0968.png">
+<meta property="og:image" content="https://pic.downk.cc/item/5e86e67d504f4bcb04ab0964.png">
+<meta property="article:published_time" content="2016-10-27T13:20:10.000Z">
+<meta property="article:modified_time" content="2020-04-03T08:29:09.407Z">
+<meta property="article:author" content="大枫">
+<meta property="article:tag" content="R语言">
+<meta property="article:tag" content="机器学习算法实现">
+<meta property="article:tag" content="KNN算法">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic.downk.cc/item/5e86e67d504f4bcb04ab0968.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/10/27/kNN算法实现_基于R语言/"/>
+
+
+
+
+
+  <title>kNN算法实现_基于R语言 | 大枫的个人博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?86773429461bd9f404e524d58c7b14ec";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">大枫的个人博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">这是最好的时代，也是最坏的时代</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/10/27/kNN%E7%AE%97%E6%B3%95%E5%AE%9E%E7%8E%B0_%E5%9F%BA%E4%BA%8ER%E8%AF%AD%E8%A8%80/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="大枫">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="大枫的个人博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">kNN算法实现_基于R语言</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-10-27T21:20:10+08:00">
+                2016-10-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>“k最近邻算法(k-Nearest Neighbor，kNN)分类算法是机器学习算法中最简单的算法之一，所谓k最近邻，就是k个最近的邻居的意思，说的是每个样本都可以用它最接近的k个邻居来代表。<br>kNN算法的核心思想是如果一个样本在特征空间中的k个最相邻的样本中的大多数属于某一个类别，则该样本也属于这个类别，并具有这个类别上样本的特性。”——<a href="http://baike.baidu.com/link?url=1gw00fZrBFVMT2jLnvmSphSRSQ1TtCc-aXLR_doUZv6BhfzA4jAXDVqsJjoyKxGcF73J4kiJelNoP_41CdD_ixjZCGzMmzshmgDku3JjPM6XU_KbjX1PZ-xdKxyQyR_R" target="_blank" rel="noopener">kNN算法_百科</a></p>
+<a id="more"></a>
+<h3 id="一、kNN算法基础"><a href="#一、kNN算法基础" class="headerlink" title="一、kNN算法基础"></a>一、kNN算法基础</h3><p>kNN算法计算步骤：</p>
+<ul>
+<li>获取已知类别的训练数据，将数据的特征进行标准化处理，以排除取值大的特征和分类变量对最终距离计算的干扰，常用的标准化方法如下：<br>极差标准化：<br>$$X_{new}=\frac{X-min(X)}{max(X)-min(X)} $$<br>中心标准化：<br>$$X_{new}=\frac{X-\mu}{\sigma}$$<br>生成哑变量：<br>$$male=<br>\begin{cases}<br>1\ \ if\ X=male\<br>0\  \ otherwise\<br>\end{cases} $$</li>
+<li>计算预测数据与各个训练数据之间的距离，常用的距离有欧式距离和Manhattan距离(又叫Block距离)，连续变量多的时候用欧式距离，分类变量多的时候用曼哈顿距离，公式如下：<br>欧式距离：<br>$$d(x,y)=\sqrt{\sum_{i=0}^N(x_i-y_i)^2}$$<br>曼哈顿距离：<br>$$d(x,y)=\sum_{i=0}^N|x_i-y_i|$$</li>
+<li>按照距离的大小按顺序进行排序；</li>
+<li>选取距离最小的k个点；</li>
+<li>确定选取的k个点所在各类别的频率；</li>
+<li>选择选取的k个点中频率最高的类别作为预测数据的预测类别。</li>
+</ul>
+<h3 id="二、kNN算法R语言实现"><a href="#二、kNN算法R语言实现" class="headerlink" title="二、kNN算法R语言实现"></a>二、kNN算法R语言实现</h3><p>获取训练集，使用的训练集数据是CDA数据挖掘课程的一个数据集，数据集记录了收入、学历、受欢迎程度、资产水平及相亲的结果。</p>
+<pre><code>orgData&lt;-read.csv(&quot;date_data2.csv&quot;)</code></pre><p>将目标变量和自变量分开存储，为之后自变量标准化做准备。</p>
+<pre><code>y&lt;-orgData[,c(&quot;Dated&quot;)]
+x&lt;-orgData[,c(1,2,3,4)]</code></pre><p>检查缺失值，经检查，没有缺失值问题</p>
+<pre><code>summary(x)</code></pre><p>写个极差标准化的函数</p>
+<pre><code>normalize &lt;- function(x) { 
+  return((x - min(x)) / (max(x) - min(x)))
+}</code></pre><p>对自变量进行极差标准化</p>
+<pre><code>x&lt;-as.data.frame(lapply(x, normalize))</code></pre><p>合并自变量和因变量</p>
+<pre><code>data&lt;-cbind(y,x)</code></pre><p>将目标变量转变为因子格式</p>
+<pre><code>data$y&lt;-as.factor(data$y)</code></pre><p>构建训练集和测试集，所用的knn模型需要把自变量因变量分开输入</p>
+<pre><code>select&lt;-sample(1:nrow(data),length(data$y)*0.7)
+train=data[select,-1]#选取70%做训练集
+test=data[-select,-1]#另外30%做测试集
+train.y=data[select,1]#训练集目标分类
+test.y=data[-select,1]#测试集目标分类</code></pre><p>使用kNN算法预测测试集数据，这里默认使用的是欧式距离，trian是训练集，test是测试集，cl是训练集实际分类，k取周围k个最临近的样本，prob=TRUE打印选中分类的概率,use.all=TRUE使用所有小于kth距离的样本用来预测。</p>
+<pre><code>y_hat&lt;-knn(train = train,test = test,cl=train.y,k=10,prob=TRUE,use.all=TRUE)</code></pre><p>测试不同k取值下的模型效果，并打印出来不同取值下的accuracy、Recall和Precision</p>
+<pre><code>ROC&lt;-data.frame()
+for (i in seq(from =1,to =40,by =1)){
+  y_hat&lt;-knn(train = train,test = test,cl=train.y,k=i)
+  require(caret)
+  con=confusionMatrix(y_hat,test.y,positive=&apos;1&apos;)
+  accuracy.knn&lt;-con$overall[c(&apos;Accuracy&apos;)] #准确率
+  recall.knn&lt;-con$byClass[c(&apos;Sensitivity&apos;)]#召回率
+  precision.knn&lt;-con$byClass[c(&apos;Pos Pred Value&apos;)]#精确率 
+  out&lt;-data.frame(i,accuracy.knn,recall.knn,precision.knn)
+  ROC&lt;-rbind(ROC,out)
+}
+names(ROC)&lt;-c(&quot;n&quot;,&quot;accuracy&quot;,&quot;Recall&quot;,&quot;Precision&quot;)
+View(ROC)</code></pre><p>结果如下：</p>
+<p><img src="https://pic.downk.cc/item/5e86e67d504f4bcb04ab0968.png" alt=""></p>
+<p>画出不同k取值下的模型效果</p>
+<pre><code>plot(ROC$Recall~ROC$n,type=&apos;l&apos;,ylim=c(0.7,1))
+lines(ROC$n,ROC$Precision,col=c(&quot;red&quot;))
+legend(&quot;bottomright&quot;, legend=c(&quot;Recall&quot;, &quot;Precision&quot;), col=c(&quot;black&quot;, &quot;red&quot;), lwd=2)</code></pre><p><img src="https://pic.downk.cc/item/5e86e67d504f4bcb04ab0964.png" alt=""></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="https://pic.downk.cc/item/5e86f540504f4bcb04b71ea8.jpg" alt="大枫 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/R%E8%AF%AD%E8%A8%80/" rel="tag"># R语言</a>
+          
+            <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%AE%97%E6%B3%95%E5%AE%9E%E7%8E%B0/" rel="tag"># 机器学习算法实现</a>
+          
+            <a href="/tags/KNN%E7%AE%97%E6%B3%95/" rel="tag"># KNN算法</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/11/27/%E6%9C%B4%E7%B4%A0%E8%B4%9D%E5%8F%B6%E6%96%AF%E7%AE%97%E6%B3%95%E5%AE%9E%E7%8E%B0_%E5%9F%BA%E4%BA%8ER%E8%AF%AD%E8%A8%80/" rel="prev" title="朴素贝叶斯算法实现_基于R语言">
+                朴素贝叶斯算法实现_基于R语言 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">大枫</p>
+              <p class="site-description motion-element" itemprop="description">这是最好的时代，也是最坏的时代</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#一、kNN算法基础"><span class="nav-number">1.</span> <span class="nav-text">一、kNN算法基础</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二、kNN算法R语言实现"><span class="nav-number">2.</span> <span class="nav-text">二、kNN算法R语言实现</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">大枫</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
